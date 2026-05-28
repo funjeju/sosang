@@ -70,11 +70,11 @@ export async function POST(request) {
     const description = visionData.choices[0].message.content;
     console.log("GPT Vision Portrait Analysis Result:", description);
 
-    // Formulate prompt for DALL-E 3
+    // Formulate prompt for GPT Image 2
     const generationPrompt = `A professional, high-end close-up studio portrait of a person who is: ${description}. But their hairstyle must be a ${styleName} (${styleCategory}), professional styling, luxury cream background, warm studio lighting, highly realistic 8k, fashion magazine photoshoot.`;
-    console.log("2. Generating style simulation using DALL-E 3 with prompt:", generationPrompt);
+    console.log("2. Generating style simulation using GPT Image 2 with prompt:", generationPrompt);
 
-    // Call DALL-E 3
+    // Call GPT Image 2 (April 2026 New Model)
     const dalleResponse = await fetch('https://api.openai.com/v1/images/generations', {
       method: 'POST',
       headers: {
@@ -82,36 +82,30 @@ export async function POST(request) {
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: 'dalle-3',
+        model: 'gpt-image-2',
         prompt: generationPrompt,
         n: 1,
         size: '1024x1024',
-        quality: 'standard'
+        quality: 'high'
       })
     });
 
     if (!dalleResponse.ok) {
       const errorText = await dalleResponse.text();
-      console.error("DALL-E 3 Error:", errorText);
-      throw new Error(`OpenAI DALL-E API error: ${dalleResponse.statusText}`);
+      console.error("GPT Image 2 Error:", errorText);
+      throw new Error(`OpenAI GPT Image API error: ${dalleResponse.statusText}`);
     }
 
     const dalleData = await dalleResponse.json();
-    const imageUrl = dalleData.data[0].url;
-    console.log("DALL-E 3 Image Generated successfully:", imageUrl);
-
-    // Fetch the image from CDN and convert to base64 so it can be saved persistently
-    const imageFetch = await fetch(imageUrl);
-    if (!imageFetch.ok) {
-      // Fallback: just return the CDN URL if we fail to convert to base64
-      return NextResponse.json({ imageUrl });
+    const b64Data = dalleData.data[0]?.b64_json;
+    
+    if (!b64Data) {
+      console.error("OpenAI Response Data structure:", JSON.stringify(dalleData));
+      throw new Error("No image data returned from GPT Image API.");
     }
 
-    const arrayBuffer = await imageFetch.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    const generatedBase64 = `data:image/png;base64,${buffer.toString('base64')}`;
-
-    console.log("3. Image converted to base64 successfully. Returning payload.");
+    const generatedBase64 = `data:image/png;base64,${b64Data}`;
+    console.log("3. Image base64 retrieved successfully. Returning payload.");
     return NextResponse.json({ base64Image: generatedBase64 });
 
   } catch (error) {
