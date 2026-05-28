@@ -378,57 +378,37 @@ export default function HairFit() {
         {/* Completion & Before/After Comparison Screen */}
         {isCompleted && !isGenerating && (
           <div className={`${styles.workspace} fade-in`}>
-            {/* Before / After Slider */}
+            {/* Before / After Comparison Grid */}
             <div className={styles.leftPanel}>
-              <h2 className={styles.styleSectionTitle}>비교 보기 (Before & After)</h2>
+              <h2 className={styles.styleSectionTitle}>시뮬레이션 비교 결과</h2>
               
-              <div className={styles.compareContainer}>
-                {/* After Image (Bottom/Underneath layer - takes full width) */}
-                <div className={styles.imageAfter} style={{ width: '100%' }}>
-                  <Image 
-                    src={resultImageSrc || '/images/default_avatar.jpg'} 
-                    alt="After Style" 
-                    fill 
-                    priority
-                  />
-                  <span className={`${styles.badge} ${styles.badgeAfter}`}>AFTER</span>
-                </div>
-
-                {/* Before Image (Top layer - width controlled by slider range) */}
-                <div 
-                  className={styles.imageBefore} 
-                  style={{ width: `${sliderPosition}%`, overflow: 'hidden' }}
-                >
-                  <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', minWidth: '100%' }}>
-                    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-                      <Image 
-                        src={imageSrc || '/images/default_avatar.jpg'} 
-                        alt="Before Style" 
-                        fill
-                        priority
-                      />
-                    </div>
+              <div className={styles.compareGrid}>
+                {/* Before Image */}
+                <div className={styles.compareItem}>
+                  <div className={styles.compareImageWrapper}>
+                    <Image 
+                      src={imageSrc || '/images/default_avatar.jpg'} 
+                      alt="Before Style" 
+                      fill 
+                      priority
+                    />
                   </div>
-                  <span className={`${styles.badge} ${styles.badgeBefore}`}>BEFORE</span>
+                  <span className={styles.compareLabel}>BEFORE</span>
                 </div>
 
-                {/* Vertical Divider line */}
-                <div className={styles.sliderBar} style={{ left: `${sliderPosition}%` }} />
-                
-                {/* Horizontal range input overlapping the container */}
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="100" 
-                  value={sliderPosition} 
-                  onChange={(e) => setSliderPosition(Number(e.target.value))}
-                  className={styles.sliderRangeInput}
-                />
+                {/* After Image */}
+                <div className={styles.compareItem}>
+                  <div className={styles.compareImageWrapper}>
+                    <Image 
+                      src={resultImageSrc || '/images/default_avatar.jpg'} 
+                      alt="After Style" 
+                      fill 
+                      priority
+                    />
+                  </div>
+                  <span className={styles.compareLabel}>AFTER</span>
+                </div>
               </div>
-
-              <p style={{ fontSize: '13px', color: 'var(--muted)', textAlign: 'center' }}>
-                슬라이더를 좌우로 움직여 변환 전후 머리 모양을 섬세하게 비교해 보세요.
-              </p>
             </div>
 
             {/* Style detail and actions */}
