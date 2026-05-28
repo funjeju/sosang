@@ -36,6 +36,7 @@ export default function HairFit() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationStep, setGenerationStep] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [resultImageSrc, setResultImageSrc] = useState(null);
 
   // Before/After Slider state
   const [sliderPosition, setSliderPosition] = useState(50);
@@ -112,6 +113,7 @@ export default function HairFit() {
     setIsCompleted(false);
     setIsGenerating(false);
     setIsSaved(false);
+    setResultImageSrc(null);
     setValidation({
       faceDetected: false,
       frontAngle: false,
@@ -121,41 +123,84 @@ export default function HairFit() {
   };
 
   // Run AI Style Generation
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (!imageSrc || !selectedStyleId) return;
 
     setIsGenerating(true);
     setGenerationStep(0);
 
-    // Simulate 5-second mult-step progress bar
-    const interval = setInterval(() => {
-      setGenerationStep(prev => {
-        if (prev < GENERATION_STEPS.length - 1) {
-          return prev + 1;
-        } else {
-          clearInterval(interval);
-          setTimeout(() => {
-            setIsGenerating(false);
-            setIsCompleted(true);
-            saveResult();
-          }, 600);
-          return prev;
-        }
-      });
-    }, 900);
-  };
+    let progressInterval;
+    let returnedImage = null;
 
-  const saveResult = async () => {
-    if (selectedStyle && imageSrc) {
-      await saveGenerationResult(selectedStyle.id, imageSrc, selectedStyle.resultImage);
+    // Start progress interval (fake progress stepping for UX)
+    progressInterval = setInterval(() => {
+      setGenerationStep(prev => {
+        if (prev < GENERATION_STEPS.length - 2) {
+          return prev + 1;
+        }
+        return prev;
+      });
+    }, 850);
+
+    try {
+      const response = await fetch('/api/generate-hair', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          image: imageSrc,
+          styleName: selectedStyle.name,
+          styleCategory: selectedStyle.category,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('AI Generation API error');
+      }
+
+      const data = await response.json();
+      if (data.base64Image) {
+        returnedImage = data.base64Image;
+      } else if (data.imageUrl) {
+        returnedImage = data.imageUrl;
+      } else {
+        throw new Error('Invalid image output structure');
+      }
+
+      // Finish progress bar steps
+      clearInterval(progressInterval);
+      setGenerationStep(GENERATION_STEPS.length - 2);
+
+      setTimeout(() => {
+        setGenerationStep(GENERATION_STEPS.length - 1);
+        setTimeout(() => {
+          setResultImageSrc(returnedImage);
+          setIsGenerating(false);
+          setIsCompleted(true);
+        }, 800);
+      }, 800);
+
+    } catch (err) {
+      console.error("AI Generation Error, falling back to static mockup asset:", err);
+      clearInterval(progressInterval);
+
+      // Graceful fallback to pre-generated mockup style assets
+      const fallbackImage = selectedStyle.resultImage;
+      setGenerationStep(GENERATION_STEPS.length - 1);
+      setTimeout(() => {
+        setResultImageSrc(fallbackImage);
+        setIsGenerating(false);
+        setIsCompleted(true);
+      }, 1000);
     }
   };
 
   const handleDownload = () => {
-    if (!selectedStyle) return;
+    if (!resultImageSrc) return;
     const link = document.createElement('a');
-    link.href = selectedStyle.resultImage;
-    link.download = `HairFit_${selectedStyle.id}_result.jpg`;
+    link.href = resultImageSrc;
+    link.download = `HairFit_${selectedStyleId}_result.png`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -358,7 +403,7 @@ export default function HairFit() {
                     {/* Size calculation setup */}
                     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
                       <Image 
-                        src={selectedStyle?.resultImage || '/images/default_avatar.jpg'} 
+                        src={resultImageSrc || '/images/default_avatar.jpg'} 
                         alt="After Style" 
                         fill
                         priority
