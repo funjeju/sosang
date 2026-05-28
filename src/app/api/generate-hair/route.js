@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server';
 
+// Vercel Pro Route Segment Config
+export const maxDuration = 60;
+export const dynamic = 'force-dynamic';
+
 export async function POST(request) {
   const apiKey = process.env.OPENAI_API_KEY;
 
@@ -82,11 +86,11 @@ export async function POST(request) {
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: 'gpt-image-2',
+        model: 'gpt-image-1-mini',
         prompt: generationPrompt,
         n: 1,
         size: '1024x1024',
-        quality: 'high'
+        quality: 'low'
       })
     });
 
