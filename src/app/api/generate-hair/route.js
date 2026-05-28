@@ -5,11 +5,11 @@ export const maxDuration = 60;
 export const dynamic = 'force-dynamic';
 
 export async function POST(request) {
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY;
 
   if (!apiKey) {
     return NextResponse.json(
-      { error: 'OpenAI API key is not configured.' },
+      { error: 'Gemini API key is not configured.' },
       { status: 500 }
     );
   }
@@ -24,96 +24,79 @@ export async function POST(request) {
       );
     }
 
-    // Ensure the image base64 format is clean (remove header if present)
+    // Clean base64 header (e.g. "data:image/png;base64,abc..." -> "abc...")
     let cleanBase64 = image;
-    if (image.startsWith('data:image')) {
-      cleanBase64 = image; // Keep full data URL for vision API
-    } else {
-      cleanBase64 = `data:image/jpeg;base64,${image}`;
+    let mimeType = 'image/png'; // Default fallback
+
+    if (image.startsWith('data:')) {
+      const match = image.match(/^data:([^;]+);base64,(.*)$/);
+      if (match) {
+        mimeType = match[1];
+        cleanBase64 = match[2];
+      }
     }
 
-    console.log("1. Calling GPT-4o-mini Vision to analyze the user portrait...");
+    const geminiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${apiKey}`;
 
-    // Call GPT-4o-mini Vision to get details of the face/person, excluding hair
-    const visionResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+    console.log(`1. Calling Gemini 2.5 Flash Image API for style [${styleName}]...`);
+
+    // Call Gemini Multimodal Content Generation
+    const geminiResponse = await fetch(geminiEndpoint, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
+        contents: [
           {
-            role: 'user',
-            content: [
+            parts: [
               {
-                type: 'text',
-                text: 'Describe the person in this image in detail (gender, ethnicity, age range, facial features like eyes, nose, lips, skin tone, current expression, clothing) in 1-2 concise sentences. Do NOT mention their current hair style, hair length, hair color, or anything about their head hair at all.'
+                text: `Generate a professional, high-end close-up studio portrait of this person, but with a new hairstyle: ${styleName} (${styleCategory}). Maintain their original facial features, facial structure, eyes, nose, lips, age range, ethnicity, gender, expression, and clothing exactly as in the input portrait image. Simply replace the hair. Place them against a premium luxury cream studio background with warm soft studio lighting, highly realistic 8k, fashion magazine photoshoot.`
               },
               {
-                type: 'image_url',
-                image_url: {
-                  url: cleanBase64
+                inline_data: {
+                  mime_type: mimeType,
+                  data: cleanBase64
                 }
               }
             ]
           }
         ],
-        max_tokens: 120
+        generationConfig: {
+          responseModalities: ["IMAGE"]
+        }
       })
     });
 
-    if (!visionResponse.ok) {
-      const errorText = await visionResponse.text();
-      console.error("GPT Vision Error:", errorText);
-      throw new Error(`OpenAI Vision API error: ${visionResponse.statusText}`);
+    if (!geminiResponse.ok) {
+      const errorText = await geminiResponse.text();
+      console.error("Gemini API Error details:", errorText);
+      throw new Error(`Gemini API error: ${geminiResponse.statusText}`);
     }
 
-    const visionData = await visionResponse.json();
-    const description = visionData.choices[0].message.content;
-    console.log("GPT Vision Portrait Analysis Result:", description);
-
-    // Formulate prompt for GPT Image 2
-    const generationPrompt = `A professional, high-end close-up studio portrait of a person who is: ${description}. But their hairstyle must be a ${styleName} (${styleCategory}), professional styling, luxury cream background, warm studio lighting, highly realistic 8k, fashion magazine photoshoot.`;
-    console.log("2. Generating style simulation using GPT Image 2 with prompt:", generationPrompt);
-
-    // Call GPT Image 2 (April 2026 New Model)
-    const dalleResponse = await fetch('https://api.openai.com/v1/images/generations', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({
-        model: 'gpt-image-1-mini',
-        prompt: generationPrompt,
-        n: 1,
-        size: '1024x1024',
-        quality: 'low'
-      })
-    });
-
-    if (!dalleResponse.ok) {
-      const errorText = await dalleResponse.text();
-      console.error("GPT Image 2 Error:", errorText);
-      throw new Error(`OpenAI GPT Image API error: ${dalleResponse.statusText}`);
-    }
-
-    const dalleData = await dalleResponse.json();
-    const b64Data = dalleData.data[0]?.b64_json;
+    const geminiData = await geminiResponse.json();
     
-    if (!b64Data) {
-      console.error("OpenAI Response Data structure:", JSON.stringify(dalleData));
-      throw new Error("No image data returned from GPT Image API.");
+    // Find the inline image in the parts list (handling both camelCase and snake_case)
+    const candidates = geminiData.candidates;
+    const parts = candidates?.[0]?.content?.parts;
+    const imagePart = parts?.find(p => p.inlineData || p.inline_data);
+    const inlineDataObj = imagePart?.inlineData || imagePart?.inline_data;
+    
+    const outputB64 = inlineDataObj?.data;
+    const outputMime = inlineDataObj?.mimeType || inlineDataObj?.mime_type || 'image/png';
+
+    if (!outputB64) {
+      console.error("Gemini Response structure:", JSON.stringify(geminiData));
+      throw new Error("No image data returned from Gemini API.");
     }
 
-    const generatedBase64 = `data:image/png;base64,${b64Data}`;
-    console.log("3. Image base64 retrieved successfully. Returning payload.");
+    const generatedBase64 = `data:${outputMime};base64,${outputB64}`;
+    console.log("2. Image base64 generated successfully by Gemini. Returning payload.");
+
     return NextResponse.json({ base64Image: generatedBase64 });
 
   } catch (error) {
-    console.error("Error in generate-hair API Route:", error);
+    console.error("Error in generate-hair API Route (Gemini):", error);
     return NextResponse.json(
       { error: error.message || 'Internal server error.' },
       { status: 500 }

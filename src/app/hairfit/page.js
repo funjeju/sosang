@@ -383,34 +383,33 @@ export default function HairFit() {
               <h2 className={styles.styleSectionTitle}>비교 보기 (Before & After)</h2>
               
               <div className={styles.compareContainer}>
-                {/* Before Image */}
-                <div className={styles.imageBefore}>
+                {/* After Image (Bottom/Underneath layer - takes full width) */}
+                <div className={styles.imageAfter} style={{ width: '100%' }}>
                   <Image 
-                    src={imageSrc || '/images/default_avatar.jpg'} 
-                    alt="Before Style" 
+                    src={resultImageSrc || '/images/default_avatar.jpg'} 
+                    alt="After Style" 
                     fill 
                     priority
                   />
-                  <span className={`${styles.badge} ${styles.badgeBefore}`}>BEFORE</span>
+                  <span className={`${styles.badge} ${styles.badgeAfter}`}>AFTER</span>
                 </div>
 
-                {/* After Image */}
+                {/* Before Image (Top layer - width controlled by slider range) */}
                 <div 
-                  className={styles.imageAfter} 
-                  style={{ width: `${sliderPosition}%` }}
+                  className={styles.imageBefore} 
+                  style={{ width: `${sliderPosition}%`, overflow: 'hidden' }}
                 >
                   <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', minWidth: '100%' }}>
-                    {/* Size calculation setup */}
                     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
                       <Image 
-                        src={resultImageSrc || '/images/default_avatar.jpg'} 
-                        alt="After Style" 
+                        src={imageSrc || '/images/default_avatar.jpg'} 
+                        alt="Before Style" 
                         fill
                         priority
                       />
                     </div>
                   </div>
-                  <span className={`${styles.badge} ${styles.badgeAfter}`}>AFTER</span>
+                  <span className={`${styles.badge} ${styles.badgeBefore}`}>BEFORE</span>
                 </div>
 
                 {/* Vertical Divider line */}
