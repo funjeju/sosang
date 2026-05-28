@@ -149,10 +149,12 @@ export default function HairFit() {
     }, 850);
 
     try {
-      const response = await fetch('/api/generate-hair', {
+      const response = await fetch(`/api/generate-hair?t=${Date.now()}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
         },
         body: JSON.stringify({
           image: imageSrc,

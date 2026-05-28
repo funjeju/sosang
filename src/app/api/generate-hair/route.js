@@ -41,7 +41,9 @@ export async function POST(request) {
     console.log(`1. Calling Gemini 2.5 Flash Image API for style [${styleName}]...`);
 
     const hairStylePrompt = promptEng || `${styleName} (${styleCategory})`;
-    const promptText = `Modify the hair of the person in the input image. You must COMPLETELY REPLACE their current hairstyle with this new hairstyle: ${hairStylePrompt}. Keep the person's facial features, eyes, nose, lips, head pose, age range, gender, and expression similar to the input image so they look like the same person, but the hair must be completely changed and naturally integrated. Place them against a professional premium luxury cream studio background with warm soft studio lighting, 8k resolution, highly detailed fashion magazine photoshoot.`;
+    const randomSeed = Math.random().toString(36).substring(7);
+    const timestamp = Date.now();
+    const promptText = `Modify the hair of the person in the input image. You must COMPLETELY REPLACE their current hairstyle with this new hairstyle: ${hairStylePrompt}. Keep the person's facial features, eyes, nose, lips, head pose, age range, gender, and expression similar to the input image so they look like the same person, but the hair must be completely changed and naturally integrated. Place them against a professional premium luxury cream studio background with warm soft studio lighting, 8k resolution, highly detailed fashion magazine photoshoot. [Seed Token: ${randomSeed}-${timestamp}]`;
 
     // Call Gemini Multimodal Content Generation
     const geminiResponse = await fetch(geminiEndpoint, {
