@@ -161,6 +161,7 @@ export default function HairFit() {
           styleName: selectedStyle.name,
           styleCategory: selectedStyle.category,
           promptEng: selectedStyle.promptEng,
+          gender: selectedStyle.gender,
         }),
       });
 
