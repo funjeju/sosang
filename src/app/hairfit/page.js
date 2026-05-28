@@ -32,6 +32,7 @@ export default function HairFit() {
   });
 
   // Editor states
+  const [genderTab, setGenderTab] = useState('women');
   const [selectedStyleId, setSelectedStyleId] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationStep, setGenerationStep] = useState(0);
@@ -41,6 +42,11 @@ export default function HairFit() {
   // Before/After Slider state
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isSaved, setIsSaved] = useState(false);
+
+  // Clear selected style when switching gender tabs
+  useEffect(() => {
+    setSelectedStyleId('');
+  }, [genderTab]);
 
   // Get selected style info
   const selectedStyle = HAIR_STYLES.find(s => s.id === selectedStyleId);
@@ -152,6 +158,7 @@ export default function HairFit() {
           image: imageSrc,
           styleName: selectedStyle.name,
           styleCategory: selectedStyle.category,
+          promptEng: selectedStyle.promptEng,
         }),
       });
 
@@ -312,8 +319,24 @@ export default function HairFit() {
                 </p>
               </div>
 
+              {/* Gender Tab Selection */}
+              <div className={styles.tabsContainer}>
+                <button 
+                  className={`${styles.tabButton} ${genderTab === 'women' ? styles.tabButtonActive : ''}`}
+                  onClick={() => setGenderTab('women')}
+                >
+                  여성 헤어스타일
+                </button>
+                <button 
+                  className={`${styles.tabButton} ${genderTab === 'men' ? styles.tabButtonActive : ''}`}
+                  onClick={() => setGenderTab('men')}
+                >
+                  남성 헤어스타일
+                </button>
+              </div>
+
               <div className={styles.styleGrid}>
-                {HAIR_STYLES.map((style) => (
+                {HAIR_STYLES.filter(style => style.gender === genderTab).map((style) => (
                   <div 
                     key={style.id} 
                     className={`${styles.styleCard} ${selectedStyleId === style.id ? styles.styleCardSelected : ''}`}

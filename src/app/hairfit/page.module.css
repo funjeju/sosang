@@ -587,3 +587,46 @@
   border-radius: 100px;
 }
 
+/* Gender Tabs Selection */
+.tabsContainer {
+  display: flex;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  margin-bottom: 20px;
+}
+
+.tabButton {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: calc(var(--radius-md) - 2px);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.tabButton:hover:not(.tabButtonActive) {
+  color: var(--foreground);
+  background: var(--accent-light);
+}
+
+.tabButtonActive {
+  background: var(--accent);
+  color: #ffffff;
+  box-shadow: var(--shadow-sm);
+}
+
+.tabButtonActive:hover {
+  background: hsl(28, 48%, 38%);
+}
+

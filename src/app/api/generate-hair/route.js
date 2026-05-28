@@ -15,7 +15,7 @@ export async function POST(request) {
   }
 
   try {
-    const { image, styleName, styleCategory } = await request.json();
+    const { image, styleName, styleCategory, promptEng } = await request.json();
 
     if (!image || !styleName) {
       return NextResponse.json(
@@ -40,6 +40,9 @@ export async function POST(request) {
 
     console.log(`1. Calling Gemini 2.5 Flash Image API for style [${styleName}]...`);
 
+    const hairStylePrompt = promptEng || `${styleName} (${styleCategory})`;
+    const promptText = `Modify the hair of the person in the input image. You must COMPLETELY REPLACE their current hairstyle with this new hairstyle: ${hairStylePrompt}. Keep the person's facial features, eyes, nose, lips, head pose, age range, gender, and expression similar to the input image so they look like the same person, but the hair must be completely changed and naturally integrated. Place them against a professional premium luxury cream studio background with warm soft studio lighting, 8k resolution, highly detailed fashion magazine photoshoot.`;
+
     // Call Gemini Multimodal Content Generation
     const geminiResponse = await fetch(geminiEndpoint, {
       method: 'POST',
@@ -51,7 +54,7 @@ export async function POST(request) {
           {
             parts: [
               {
-                text: `Generate a professional, high-end close-up studio portrait of this person, but with a new hairstyle: ${styleName} (${styleCategory}). Maintain their original facial features, facial structure, eyes, nose, lips, age range, ethnicity, gender, expression, and clothing exactly as in the input portrait image. Simply replace the hair. Place them against a premium luxury cream studio background with warm soft studio lighting, highly realistic 8k, fashion magazine photoshoot.`
+                text: promptText
               },
               {
                 inline_data: {
