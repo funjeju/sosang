@@ -344,9 +344,20 @@ export default function HairFit() {
                     style={{ opacity: imageSrc ? 1 : 0.6, cursor: imageSrc ? 'pointer' : 'not-allowed' }}
                   >
                     <div className={styles.styleThumbPlaceholder}>
-                      {/* Stylized background fallback */}
-                      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(45deg, var(--border), var(--accent-light))', zIndex: 1 }} />
-                      <span style={{ position: 'relative', zIndex: 2, fontWeight: 600 }}>{style.name}</span>
+                      {style.thumbnail ? (
+                        <Image 
+                          src={style.thumbnail} 
+                          alt={style.name}
+                          fill
+                          sizes="(max-width: 768px) 50vw, 200px"
+                          style={{ objectFit: 'cover' }}
+                        />
+                      ) : (
+                        <>
+                          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(45deg, var(--border), var(--accent-light))', zIndex: 1 }} />
+                          <span style={{ position: 'relative', zIndex: 2, fontWeight: 600 }}>{style.name}</span>
+                        </>
+                      )}
                     </div>
                     <span className={styles.styleCategory}>{style.category}</span>
                     <span className={styles.styleName}>{style.name}</span>
