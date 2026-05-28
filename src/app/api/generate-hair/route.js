@@ -44,7 +44,14 @@ export async function POST(request) {
     const hairStylePrompt = promptEng || `${styleName} (${styleCategory})`;
     const randomSeed = Math.random().toString(36).substring(7);
     const timestamp = Date.now();
-    const promptText = `A high-end, professional studio portrait of a ${genderNoun} who has the exact same facial features, identity, ethnicity, and expression as the ${genderNoun} in the reference input image. However, you must COMPLETELY REPLACE their hair. They must have a completely different and new hairstyle: ${hairStylePrompt}. The new hair must be integrated naturally onto their head. Set against a clean premium cream studio background with soft warm studio lighting, highly realistic 8k, fashion magazine photoshoot. [Seed Token: ${randomSeed}-${timestamp}]`;
+    const promptText = `A high-end, professional studio portrait of a ${genderNoun} who has the exact same face, eyes, nose, lips, jawline, expression, and facial identity as the ${genderNoun} in the reference input image. 
+
+[CRITICAL HAIR INSTRUCTION]
+You must COMPLETELY DISCARD and IGNORE the original hairstyle, hair length, hair color, and hair shape from the reference image. Do not copy or carry over the hair from the reference image.
+Instead, draw a completely new hairstyle: ${hairStylePrompt}.
+The new hair must look highly realistic, detailed, and be integrated seamlessly on their head.
+
+Set against a clean, premium cream studio background with warm soft studio lighting, highly realistic 8k, fashion magazine photoshoot. [Seed Token: ${randomSeed}-${timestamp}]`;
 
     // Call Gemini Multimodal Content Generation
     const geminiResponse = await fetch(geminiEndpoint, {
