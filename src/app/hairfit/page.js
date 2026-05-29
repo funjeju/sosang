@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './page.module.css';
-import { HAIR_STYLES, saveGenerationResult } from '../../lib/mockData';
+import { getStylesFromDB, saveGenerationResult } from '../../lib/mockData';
 import { ArrowLeft, Upload, Check, RefreshCw, Download, Sparkles, AlertCircle, Eye, Share2 } from 'lucide-react';
 
 const GENERATION_STEPS = [
@@ -31,6 +31,10 @@ export default function HairFit() {
     hairMapped: false
   });
 
+  // Db data states
+  const [hairStyles, setHairStyles] = useState([]);
+  const [isLoadingStyles, setIsLoadingStyles] = useState(true);
+
   // Editor states
   const [genderTab, setGenderTab] = useState('women');
   const [selectedStyleId, setSelectedStyleId] = useState('');
@@ -43,13 +47,29 @@ export default function HairFit() {
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isSaved, setIsSaved] = useState(false);
 
+  // Load hair styles from DB
+  useEffect(() => {
+    const loadStyles = async () => {
+      setIsLoadingStyles(true);
+      try {
+        const data = await getStylesFromDB();
+        setHairStyles(data);
+      } catch (err) {
+        console.error("Failed to load hairstyles:", err);
+      } finally {
+        setIsLoadingStyles(false);
+      }
+    };
+    loadStyles();
+  }, []);
+
   // Clear selected style when switching gender tabs
   useEffect(() => {
     setSelectedStyleId('');
   }, [genderTab]);
 
   // Get selected style info
-  const selectedStyle = HAIR_STYLES.find(s => s.id === selectedStyleId);
+  const selectedStyle = hairStyles.find(s => s.id === selectedStyleId);
 
   // Handle Photo Upload
   const handleFileChange = (e) => {
@@ -338,35 +358,42 @@ export default function HairFit() {
                 </button>
               </div>
 
-              <div className={styles.styleGrid}>
-                {HAIR_STYLES.filter(style => style.gender === genderTab).map((style) => (
-                  <div 
-                    key={style.id} 
-                    className={`${styles.styleCard} ${selectedStyleId === style.id ? styles.styleCardSelected : ''}`}
-                    onClick={() => imageSrc && setSelectedStyleId(style.id)}
-                    style={{ opacity: imageSrc ? 1 : 0.6, cursor: imageSrc ? 'pointer' : 'not-allowed' }}
-                  >
-                    <div className={styles.styleThumbPlaceholder}>
-                      {style.thumbnail ? (
-                        <Image 
-                          src={style.thumbnail} 
-                          alt={style.name}
-                          fill
-                          sizes="(max-width: 768px) 50vw, 200px"
-                          style={{ objectFit: 'cover' }}
-                        />
-                      ) : (
-                        <>
-                          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(45deg, var(--border), var(--accent-light))', zIndex: 1 }} />
-                          <span style={{ position: 'relative', zIndex: 2, fontWeight: 600 }}>{style.name}</span>
-                        </>
-                      )}
+              {isLoadingStyles ? (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', padding: '40px 0', width: '100%' }}>
+                  <div className={styles.loadingSpinner} style={{ width: '40px', height: '40px' }} />
+                  <p style={{ fontSize: '13px', color: 'var(--muted)' }}>헤어스타일 목록을 불러오는 중...</p>
+                </div>
+              ) : (
+                <div className={styles.styleGrid}>
+                  {hairStyles.filter(style => style.gender === genderTab).map((style) => (
+                    <div 
+                      key={style.id} 
+                      className={`${styles.styleCard} ${selectedStyleId === style.id ? styles.styleCardSelected : ''}`}
+                      onClick={() => imageSrc && setSelectedStyleId(style.id)}
+                      style={{ opacity: imageSrc ? 1 : 0.6, cursor: imageSrc ? 'pointer' : 'not-allowed' }}
+                    >
+                      <div className={styles.styleThumbPlaceholder}>
+                        {style.thumbnail ? (
+                          <Image 
+                            src={style.thumbnail} 
+                            alt={style.name}
+                            fill
+                            sizes="(max-width: 768px) 50vw, 200px"
+                            style={{ objectFit: 'cover' }}
+                          />
+                        ) : (
+                          <>
+                            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(45deg, var(--border), var(--accent-light))', zIndex: 1 }} />
+                            <span style={{ position: 'relative', zIndex: 2, fontWeight: 600 }}>{style.name}</span>
+                          </>
+                        )}
+                      </div>
+                      <span className={styles.styleCategory}>{style.category}</span>
+                      <span className={styles.styleName}>{style.name}</span>
                     </div>
-                    <span className={styles.styleCategory}>{style.category}</span>
-                    <span className={styles.styleName}>{style.name}</span>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
 
               <button 
                 className={styles.generateButton}

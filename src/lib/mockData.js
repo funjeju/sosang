@@ -1,5 +1,5 @@
 import { db, auth, isFirebaseEnabled } from './firebase';
-import { collection, addDoc, getDocs, query, where, orderBy, limit } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where, orderBy, limit, doc, setDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 
 export const AI_TOOLS = [
   {
@@ -284,4 +284,125 @@ export const getHistory = async () => {
   } else {
     return getLocalHistory();
   }
+};
+
+// DB에서 헤어스타일 가져오기 및 초기 시딩(Seeding)
+export const getStylesFromDB = async () => {
+  // LocalStorage Fallback Helper
+  const getLocalStyles = () => {
+    if (typeof window === 'undefined') return HAIR_STYLES; // fallback to static array on SSR
+    const stored = localStorage.getItem('hairfit_styles');
+    if (!stored) {
+      localStorage.setItem('hairfit_styles', JSON.stringify(HAIR_STYLES));
+      return HAIR_STYLES;
+    }
+    return JSON.parse(stored);
+  };
+
+  if (isFirebaseEnabled && db) {
+    try {
+      const q = query(collection(db, 'hairstyles'));
+      const querySnapshot = await getDocs(q);
+      const list = [];
+      querySnapshot.forEach((doc) => {
+        list.push({ id: doc.id, ...doc.data() });
+      });
+
+      if (list.length === 0) {
+        console.log("Firebase Firestore 'hairstyles' collection is empty. Seeding initial 16 styles...");
+        // Seed initial data
+        const seedPromises = HAIR_STYLES.map(async (style) => {
+          const { id, ...dataWithoutId } = style;
+          // Use style.id as document id to keep reference
+          await setDoc(doc(db, 'hairstyles', id), dataWithoutId);
+          return { id, ...dataWithoutId };
+        });
+        const seededList = await Promise.all(seedPromises);
+        return seededList;
+      }
+      return list;
+    } catch (e) {
+      console.error('Error fetching hairstyles from Firestore, falling back to LocalStorage: ', e);
+      return getLocalStyles();
+    }
+  } else {
+    return getLocalStyles();
+  }
+};
+
+// 신규 스타일 추가
+export const addStyleToDB = async (styleData) => {
+  const newId = 'style_' + Date.now();
+  const newStyle = {
+    ...styleData,
+    createdAt: new Date().toISOString()
+  };
+
+  if (isFirebaseEnabled && db) {
+    try {
+      await setDoc(doc(db, 'hairstyles', newId), newStyle);
+      return { id: newId, ...newStyle };
+    } catch (e) {
+      console.error('Error adding style to Firestore, saving to LocalStorage fallback: ', e);
+    }
+  }
+
+  // LocalStorage Fallback
+  if (typeof window !== 'undefined') {
+    const stored = localStorage.getItem('hairfit_styles');
+    const list = stored ? JSON.parse(stored) : [...HAIR_STYLES];
+    const createdStyle = { id: newId, ...newStyle };
+    localStorage.setItem('hairfit_styles', JSON.stringify([createdStyle, ...list]));
+    return createdStyle;
+  }
+  return { id: newId, ...newStyle };
+};
+
+// 기존 스타일 수정
+export const updateStyleInDB = async (id, styleData) => {
+  const updatedStyle = {
+    ...styleData,
+    updatedAt: new Date().toISOString()
+  };
+
+  if (isFirebaseEnabled && db) {
+    try {
+      await updateDoc(doc(db, 'hairstyles', id), updatedStyle);
+      return { id, ...updatedStyle };
+    } catch (e) {
+      console.error('Error updating style in Firestore, falling back to LocalStorage: ', e);
+    }
+  }
+
+  // LocalStorage Fallback
+  if (typeof window !== 'undefined') {
+    const stored = localStorage.getItem('hairfit_styles');
+    let list = stored ? JSON.parse(stored) : [...HAIR_STYLES];
+    list = list.map(item => item.id === id ? { ...item, ...updatedStyle } : item);
+    localStorage.setItem('hairfit_styles', JSON.stringify(list));
+    return { id, ...updatedStyle };
+  }
+  return { id, ...updatedStyle };
+};
+
+// 스타일 삭제
+export const deleteStyleFromDB = async (id) => {
+  if (isFirebaseEnabled && db) {
+    try {
+      await deleteDoc(doc(db, 'hairstyles', id));
+      return id;
+    } catch (e) {
+      console.error('Error deleting style from Firestore, falling back to LocalStorage: ', e);
+    }
+  }
+
+  // LocalStorage Fallback
+  if (typeof window !== 'undefined') {
+    const stored = localStorage.getItem('hairfit_styles');
+    let list = stored ? JSON.parse(stored) : [...HAIR_STYLES];
+    list = list.filter(item => item.id !== id);
+    localStorage.setItem('hairfit_styles', JSON.stringify(list));
+    return id;
+  }
+  return id;
 };

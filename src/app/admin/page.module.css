@@ -1,0 +1,222 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--background);
+}
+
+.main {
+  flex: 1;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 40px 24px 80px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Back Link */
+.backLink {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  align-self: flex-start;
+  transition: color 0.2s ease;
+  text-decoration: none;
+}
+
+.backLink:hover {
+  color: var(--foreground);
+}
+
+/* Title Section */
+.titleSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.adminBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--foreground);
+  color: var(--background);
+  padding: 4px 10px;
+  border-radius: 4px;
+  align-self: flex-start;
+  letter-spacing: 0.05em;
+}
+
+.title {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.description {
+  font-size: 16px;
+  color: var(--muted);
+  max-width: 750px;
+  line-height: 1.6;
+}
+
+/* Hub Grid Layout */
+.hubGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-top: 16px;
+}
+
+@media (max-width: 768px) {
+  .hubGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.hubCard {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hubCard:hover:not(.hubCardDisabled) {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-lg);
+}
+
+.hubCardDisabled {
+  opacity: 0.7;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.iconWrapper {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  background: var(--background);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  transition: all 0.3s ease;
+}
+
+.iconActive {
+  background: var(--accent-light);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.hubCard:hover .iconActive {
+  transform: rotate(6deg) scale(1.05);
+}
+
+.statusBadge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 100px;
+}
+
+.statusActive {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+@media (prefers-color-scheme: dark) {
+  .statusActive {
+    background: rgba(6, 95, 70, 0.2);
+    color: #34d399;
+  }
+}
+
+.statusComing {
+  background: var(--background);
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.cardTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.cardDesc {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.cardFooter {
+  margin-top: 8px;
+}
+
+.manageButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent);
+  color: #ffffff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.manageButton:hover {
+  background: hsl(28, 48%, 38%);
+  transform: translateX(2px);
+}
+
+.disabledButton {
+  width: 100%;
+  background: var(--background);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: not-allowed;
+}
+
+.footer {
+  padding: 24px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  background: var(--card-bg);
+}
