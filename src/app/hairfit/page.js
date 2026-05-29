@@ -370,7 +370,7 @@ export default function HairFit() {
                       key={style.id} 
                       className={`${styles.styleCard} ${selectedStyleId === style.id ? styles.styleCardSelected : ''}`}
                       onClick={() => imageSrc && setSelectedStyleId(style.id)}
-                      style={{ opacity: imageSrc ? 1 : 0.6, cursor: imageSrc ? 'pointer' : 'not-allowed' }}
+                      style={{ opacity: 1, cursor: imageSrc ? 'pointer' : 'not-allowed' }}
                     >
                       <div className={styles.styleThumbPlaceholder}>
                         {style.thumbnail ? (
