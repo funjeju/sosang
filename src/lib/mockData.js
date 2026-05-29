@@ -144,8 +144,8 @@ export const HAIR_STYLES = [
     gender: 'men',
     name: '내추럴 리프컷',
     category: '남성 스타일',
-    thumbnail: '/images/styles/leaf_cut_thumb.jpg',
-    resultImage: '/images/styles/leaf_cut_result.jpg',
+    thumbnail: '/images/styles/sample_leaf_cut.png',
+    resultImage: '/images/styles/sample_leaf_cut.png',
     desc: '가르마 라인을 타고 자연스럽게 흘러내리는 감성적인 리프컷',
     promptEng: 'natural leaf cut hairstyle, long soft textured hair parted in the middle falling gently around the eyes, clean sides and neck taper'
   },
@@ -154,8 +154,8 @@ export const HAIR_STYLES = [
     gender: 'men',
     name: '소프트 댄디 컷',
     category: '남성 스타일',
-    thumbnail: '/images/styles/leaf_cut_thumb.jpg',
-    resultImage: '/images/styles/leaf_cut_result.jpg',
+    thumbnail: '/images/styles/sample_as_perm.png',
+    resultImage: '/images/styles/sample_as_perm.png',
     desc: '차분하게 내려오는 앞머리로 깔끔하고 부드러운 호감형 인상을 주는 스타일',
     promptEng: 'soft dandy cut hairstyle, neat straight bangs covering the forehead, clean sideburns and tapered back, gentle casual look'
   },
@@ -164,8 +164,8 @@ export const HAIR_STYLES = [
     gender: 'men',
     name: '클래식 투블럭 컷',
     category: '남성 스타일',
-    thumbnail: '/images/styles/leaf_cut_thumb.jpg',
-    resultImage: '/images/styles/leaf_cut_result.jpg',
+    thumbnail: '/images/styles/sample_shadow_perm.png',
+    resultImage: '/images/styles/sample_shadow_perm.png',
     desc: '옆머리를 깔끔하게 정리하고 윗머리에 볼륨을 주어 세련된 기본 스타일',
     promptEng: 'classic two-block haircut, shaved sides and back, textured voluminous longer top hair styled neatly'
   },
@@ -174,8 +174,8 @@ export const HAIR_STYLES = [
     gender: 'men',
     name: '텍스처 쉐도우 펌',
     category: '남성 스타일',
-    thumbnail: '/images/styles/leaf_cut_thumb.jpg',
-    resultImage: '/images/styles/leaf_cut_result.jpg',
+    thumbnail: '/images/styles/sample_shadow_perm.png',
+    resultImage: '/images/styles/sample_shadow_perm.png',
     desc: '그림자 같은 자연스러운 웨이브와 볼륨감으로 캐주얼하고 영한 느낌의 펌',
     promptEng: 'textured shadow perm hairstyle, soft messy wavy curls on top with natural volume, clean short sides and back'
   },
@@ -184,8 +184,8 @@ export const HAIR_STYLES = [
     gender: 'men',
     name: '클래식 리젠트 컷',
     category: '남성 스타일',
-    thumbnail: '/images/styles/leaf_cut_thumb.jpg',
-    resultImage: '/images/styles/leaf_cut_result.jpg',
+    thumbnail: '/images/styles/sample_ivy_league.png',
+    resultImage: '/images/styles/sample_ivy_league.png',
     desc: '앞머리를 세워 이마를 드러내어 깔끔하고 신뢰감 높은 이미지를 보여주는 스타일',
     promptEng: 'classic regent haircut, front hair styled up and backward exposing the forehead, clean short sides and back, professional look'
   },
@@ -194,8 +194,8 @@ export const HAIR_STYLES = [
     gender: 'men',
     name: '내추럴 애즈 펌',
     category: '남성 스타일',
-    thumbnail: '/images/styles/leaf_cut_thumb.jpg',
-    resultImage: '/images/styles/leaf_cut_result.jpg',
+    thumbnail: '/images/styles/sample_as_perm.png',
+    resultImage: '/images/styles/sample_as_perm.png',
     desc: '이마가 살짝 보이는 자연스러운 가르마 펌으로 부드럽고 훈훈한 스타일',
     promptEng: 'natural as-perm hairstyle, soft curtain perm with a slight forehead reveal in the middle, gentle natural waves'
   },
@@ -204,8 +204,8 @@ export const HAIR_STYLES = [
     gender: 'men',
     name: '쉬크 울프 컷',
     category: '남성 스타일',
-    thumbnail: '/images/styles/leaf_cut_thumb.jpg',
-    resultImage: '/images/styles/leaf_cut_result.jpg',
+    thumbnail: '/images/styles/sample_wolf_cut.png',
+    resultImage: '/images/styles/sample_wolf_cut.png',
     desc: '뒷머리를 트렌디하게 기르고 질감을 가볍게 쳐낸 개성 있고 반항적인 무드',
     promptEng: 'chic wolf cut hairstyle, textured layers, short messy top and sides with longer mullet tail hair in the back'
   },
@@ -214,8 +214,8 @@ export const HAIR_STYLES = [
     gender: 'men',
     name: '아이비리그 컷',
     category: '남성 스타일',
-    thumbnail: '/images/styles/leaf_cut_thumb.jpg',
-    resultImage: '/images/styles/leaf_cut_result.jpg',
+    thumbnail: '/images/styles/sample_ivy_league.png',
+    resultImage: '/images/styles/sample_ivy_league.png',
     desc: '짧게 올린 앞머리와 스포티한 텍스처로 남성미와 청량감을 살린 스타일',
     promptEng: 'ivy league haircut, very short cropped sides and back, front hair styled upward with a slight textured lift'
   }

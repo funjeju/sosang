@@ -282,7 +282,8 @@
 }
 
 .styleThumbPlaceholder {
-  height: 100px;
+  width: 100%;
+  aspect-ratio: 1 / 1;
   border-radius: 8px;
   background: linear-gradient(135deg, var(--border) 0%, var(--accent-light) 100%);
   display: flex;
